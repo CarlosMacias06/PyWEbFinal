@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Espacios</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .espacio {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #000;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer; /* Cambiar el cursor para indicar que se puede hacer clic */
+        }
+        .disponible {
+            background-color: green;
+        }
+        .ocupado {
+            background-color: red;
+            cursor: not-allowed; /* Cambiar el cursor para espacios ocupados */
+        }
+    </style>
+</head>
+<body>
+    <div class="reservation-box">
+        <h2>Reserva tu espacio en el parqueadero</h2>
+        <form id="form-reserva" onsubmit="return validarReserva()">
+            <label for="usuario">Identificación del Usuario:</label>
+            <input type="text" id="usuario" name="usuario" required><br><br>
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required><br><br>
+
+            <label for="hora">Hora:</label>
+            <input type="time" id="hora" name="hora" min="06:00" max="19:00" required><br><br>
+
+            <label for="cancelationCode">Código de cancelación:</label>
+            <input type="text" id="cancelationCode" value="*XX-YY" disabled><br><br>
+
+            <label for="espacio">Espacio (1-25):</label>
+            <input type="number" id="espacio" name="espacio" min="1" max="25" required><br><br>
+
+            <button type="submit">Confirmar Reserva</button>
+        </form>
+        
+        <div id="tabla-disponibilidad" class="grid"></div>
+    </div>
+
+    <script>
+        // Datos de los espacios desde localStorage
+        let espacios = JSON.parse(localStorage.getItem('espacios')) || Array.from({ length: 25 }, (_, i) => ({ id: i + 1, estado: "disponible" }));
+
+        const tablaDisponibilidad = document.getElementById('tabla-disponibilidad');
+
+        // Cargar el nombre de usuario desde localStorage
+        window.onload = function() {
+            const usuario = localStorage.getItem('usuario');
+            if (usuario) {
+                document.getElementById('usuario').value = usuario; // Mostrar el usuario registrado
+            }
+            actualizarTablaDisponibilidad(); // Mostrar disponibilidad al cargar
+        };
+
+        // Generar la tabla de disponibilidad
+        function actualizarTablaDisponibilidad() {
+            tablaDisponibilidad.innerHTML = ''; // Limpiar la tabla
+
+            espacios.forEach(espacio => {
+                const espacioDiv = document.createElement('div');
+                espacioDiv.className = 'espacio ' + (espacio.estado === "disponible" ? 'disponible' : 'ocupado');
+                espacioDiv.textContent = espacio.id; // Mostrar número del espacio
+                tablaDisponibilidad.appendChild(espacioDiv);
+            });
+        }
+
+        // Validar la reserva de un espacio
+        function validarReserva() {
+            const usuario = document.getElementById('usuario').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const espacioNumero = parseInt(document.getElementById('espacio').value) - 1; // Convertir a índice (0-24)
+
+            // Verificar si el usuario ya tiene una reserva
+            let reservas = JSON.parse(localStorage.getItem('reservas')) || {};
+            if (reservas[usuario]) {
+                alert("Este usuario ya tiene una reserva activa.");
+                return false;
+            }
+
+            // Validaciones básicas
+            if (fecha === "" || hora === "" || espacioNumero < 0 || espacioNumero >= espacios.length) {
+                alert("Todos los campos son obligatorios y el espacio debe ser un número entre 1 y " + espacios.length + ".");
+                return false;
+            }
+
+            // Validar que la fecha esté entre lunes y viernes
+            const diaFecha = new Date(fecha).getDay();
+            if (diaFecha === 0 || diaFecha === 6) { // Domingo o sábado
+                alert("La institución no trabaja los fines de semana. Por favor, selecciona una fecha entre lunes y viernes.");
+                return false;
+            }
+
+            // Validar que la hora esté entre 6 AM y 7 PM
+            const horaNumero = parseInt(hora.split(':')[0]);
+            if (horaNumero < 6 || horaNumero >= 19) {
+                alert("La institución solo atiende de 6 AM a 7 PM. Por favor, selecciona una hora dentro de ese rango.");
+                return false;
+            }
+
+            if (espacios[espacioNumero].estado === "ocupado") {
+                alert("El espacio está ocupado. Por favor, elige otro.");
+                return false; // Evitar el envío del formulario
+            }
+
+            // Marcar el espacio como ocupado
+            espacios[espacioNumero].estado = "ocupado"; // Cambiar a ocupado
+
+            // Generar el código de cancelación
+            const codigoDeReserva = generarCodigoDeReserva();
+            document.getElementById('cancelationCode').value = codigoDeReserva;
+
+            // Guardar el estado actualizado en localStorage
+            localStorage.setItem('espacios', JSON.stringify(espacios));
+
+            // Registrar la reserva del usuario
+            reservas[usuario] = { fecha, hora, espacio: espacios[espacioNumero].id, codigoDeReserva };
+            localStorage.setItem('reservas', JSON.stringify(reservas));
+
+            // Actualizar la visualización de la tabla de disponibilidad
+            actualizarTablaDisponibilidad();
+
+            // Enviar la información de la reserva al panel de administración
+            recibirReserva(fecha, hora, espacios[espacioNumero].id, codigoDeReserva);
+
+            alert("Reserva realizada correctamente.");
+            return false; // Prevenir el envío real del formulario
+        }
+
+        // Función para enviar la información de la reserva al panel de administración
+        function recibirReserva(fecha, hora, espacioReservado, codigoDeReserva) {
+            // Registrar la reserva en el registro de actividades
+            let registroDeActividades = JSON.parse(localStorage.getItem('registroDeActividades')) || [];
+            registroDeActividades.push({
+                fecha: fecha,
+                hora: hora,
+                espacio: espacioReservado,
+                codigoDeReserva: codigoDeReserva,
+                seccion: "Reservas",
+                accion: "Nueva reserva"
+            });
+            localStorage.setItem('registroDeActividades', JSON.stringify(registroDeActividades));
+        }
+
+        // Función para generar un código de reserva
+        function generarCodigoDeReserva() {
+            const asterisco = '*';
+            const numeros = '0123456789';
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let codigo = asterisco;
+
+            for (let i = 0; i < 2; i++) {
+                codigo += letras.charAt(Math.floor(Math.random() * letras.length));
+            }
+
+            for (let i = 0; i < 2; i++) {
+                codigo += numeros.charAt(Math.floor(Math.random() * numeros.length));
+            }
+
+            return codigo;
+        }
+    </script>
+</body>
+</html>

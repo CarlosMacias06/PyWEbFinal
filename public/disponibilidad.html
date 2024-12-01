@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disponibilidad de Espacios</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos para la tabla de disponibilidad */
+        .tabla {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 columnas */
+            gap: 10px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .cuadro {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            border: 2px solid #ffffff;
+        }
+        .disponible {
+            background-color: green; /* Espacio disponible */
+        }
+        .ocupado {
+            background-color: red; /* Espacio ocupado */
+        }
+        #disponibilidad {
+            background-color: rgba(255, 255, 255, 0.864); /* Fondo blanco traslúcido */
+            border: 1px solid #000000; /* Borde negro */
+            padding: 10px;
+            max-width: 300px; /* Ancho máximo del cuadro */
+            margin: 20px auto; /* Centrar el cuadro */
+            color: #000000; /* Letra negra */
+        }
+    </style>
+</head>
+<body>
+    <div id="disponibilidad">
+        <h2>Disponibilidad en tiempo real</h2>
+        <div>Espacios disponibles: 0 de 25</div>
+    </div>
+
+    <div class="tabla" id="tablaDisponibilidad">
+        <!-- Los cuadros se generarán aquí con JavaScript -->
+    </div>
+
+    <script>
+        // Cargar el estado de los espacios desde localStorage
+        let espacios = JSON.parse(localStorage.getItem('espacios')) || Array.from({ length: 25 }, (_, i) => ({ id: i + 1, estado: "disponible" }));
+
+        const tabla = document.getElementById('tablaDisponibilidad');
+
+        // Generar la tabla de disponibilidad
+        function actualizarTablaDisponibilidad() {
+            tabla.innerHTML = ''; // Limpiar la tabla
+
+            espacios.forEach(espacio => {
+                const cuadro = document.createElement('div');
+                cuadro.className = espacio.estado === "disponible" ? 'cuadro disponible' : 'cuadro ocupado'; // Clase según disponibilidad
+                cuadro.textContent = espacio.id; // Números del 1 al 25
+                tabla.appendChild(cuadro);
+            });
+        }
+
+        // Actualizar el texto de disponibilidad
+        function actualizarDisponibilidad() {
+            const espaciosDisponibles = espacios.filter(espacio => espacio.estado === "disponible").length;
+            document.getElementById('disponibilidad').getElementsByTagName('div')[0].textContent = `Espacios disponibles: ${espaciosDisponibles} de ${espacios.length}`;
+        }
+
+        // Función para actualizar la disponibilidad de los espacios en tiempo real
+        function actualizarDisponibilidadEnTiempoReal(espacioReservado) {
+            // Buscar el espacio reservado en el array de espacios
+            const index = espacios.findIndex(espacio => espacio.id === espacioReservado);
+            if (index !== -1) {
+                // Marcar el espacio como ocupado
+                espacios[index].estado = "ocupado";
+                localStorage.setItem('espacios', JSON.stringify(espacios));
+
+                // Actualizar la visualización de la tabla de disponibilidad
+                actualizarTablaDisponibilidad();
+                actualizarDisponibilidad();
+            }
+        }
+
+        // Función para actualizar la disponibilidad después de cancelar una reserva
+        function actualizarDisponibilidadDespuesCancelar(espacioReservado) {
+            // Buscar el espacio reservado en el array de espacios
+            const index = espacios.findIndex(espacio => espacio.id === espacioReservado);
+            if (index !== -1) {
+                // Marcar el espacio como disponible
+                espacios[index].estado = "disponible";
+                localStorage.setItem('espacios', JSON.stringify(espacios));
+
+                // Actualizar la visualización de la tabla de disponibilidad
+                actualizarTablaDisponibilidad();
+                actualizarDisponibilidad();
+            }
+        }
+
+        // Inicializar la tabla de disponibilidad al cargar la página
+        window.onload = function() {
+            actualizarTablaDisponibilidad(); // Mostrar disponibilidad al cargar
+            actualizarDisponibilidad(); // Actualizar texto de disponibilidad
+        };
+    </script>
+</body>
+</html>

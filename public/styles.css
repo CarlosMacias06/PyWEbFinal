@@ -1,0 +1,199 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: url('aa.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Establece la altura del cuerpo al 100% de la altura de la ventana */
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent; /* Establece el fondo como transparente */
+}
+
+
+/* Estilos para el encabezado */
+.header {
+    position: absolute; /* Posiciona el encabezado */
+    top: 20px; /* Distancia desde la parte superior */
+    left: 20px; /* Distancia desde la izquierda */
+    color: rgb(0, 0, 0); /* Color del texto */
+    font-size: 1.5em; /* Tamaño de fuente */
+}
+
+/* Estilos para centrar el contenedor de formularios */
+.form-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    flex-direction: column; /* Coloca los elementos en columna */
+    height: 50vh; /* Ocupa toda la altura de la ventana */
+    text-align: center; /* Centra el texto dentro del contenedor */
+}
+
+/* Estilos generales para los formularios */
+form {
+    margin: 10px 0; /* Margen superior e inferior para separación */
+}
+
+/* Campos de entrada */
+input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
+    width: 80%; /* Ajusta el ancho del campo */
+    padding: 10px; /* Espaciado interno */
+    margin-bottom: 10px; /* Espaciado entre campos */
+    border: 1px solid #ccc; /* Borde de los campos */
+    border-radius: 5px; /* Bordes redondeados */
+    font-size: 1em; /* Tamaño de fuente */
+}
+
+/* Botones */
+button {
+    padding: 10px 20px; /* Espaciado interno del botón */
+    background-color: #4CAF50; /* Color de fondo */
+    color: rgb(0, 0, 0); /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse */
+}
+
+button:hover {
+    background-color: #45a049; /* Color al pasar el mouse */
+}
+
+/* Ajustar el título */
+h2 {
+    margin-bottom: 20px; /* Espaciado inferior para el título */
+}
+body {
+    background-image: url('uleam.png');
+    background-size: cover; /* Ajusta para que cubra todo el fondo */
+    background-position: center; /* Centrar la imagen */
+    background-repeat: no-repeat; /* No repetir la imagen */
+}
+/* Fondo blanco para el párrafo */
+.form-container p {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px; /* Opcional: para bordes redondeados */
+    display: inline-block; /* Esto asegura que solo el texto tenga el fondo blanco */
+}
+/* Fondo blanco para el h1 */
+.header h1 {
+    background-color: rgb(255, 255, 255);
+    padding: 10px;
+    border-radius: 5px; /* Opcional: para bordes redondeados */
+    display: inline-block; /* Asegura que solo el texto tenga fondo blanco */
+}
+.reservation-box {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con algo de transparencia */
+    padding: 20px;
+    width: 80%;
+    max-width: 500px; /* Tamaño máximo del cuadro */
+    margin: 50px auto; /* Centrar el cuadro */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para dar un efecto flotante */
+}
+
+h2 {
+    text-align: center;
+    color: #000000; /* Texto en color oscuro para resaltar */
+}
+
+label {
+    font-weight: bold;
+    color: #000000; /* Color oscuro para las etiquetas */
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc; /* Borde gris claro */
+    font-size: 16px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #45a049; /* Efecto hover */
+}
+/* Estilo para el panel de control del administrador */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+    background-color: #000000;
+    color: white;
+    margin: 0;
+}
+
+section#log-seccion {
+    margin: 20px;
+    padding: 20px;
+    background-color: #fafafa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px #410e0e;
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+}
+
+/* Estilo para el contenedor de los movimientos */
+#movimientos-recientes {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white; /* Fondo blanco para resaltar */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgb(255, 0, 0); /* Sombra para dar efecto de recuadro */
+    overflow-y: auto; /* Permitir desplazamiento si hay muchos registros */
+    max-height: 400px; /* Limitar la altura máxima */
+    border: 1px solid #ddd; /* Borde sutil alrededor del recuadro */
+}
+
+/* Estilo individual para cada movimiento registrado */
+#movimientos-recientes p {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9; /* Fondo gris claro */
+    border-left: 4px solid #4CAF50; /* Borde color verde a la izquierda */
+    border-radius: 4px; /* Esquinas redondeadas */
+    font-size: 14px;
+    line-height: 1.6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#movimientos-recientes p:hover {
+    background-color: #f1f1f1; /* Cambiar fondo al pasar el cursor */
+}
+
+/* Mejoras para el enlace de retorno o botones */
+a {
+    text-decoration: none;
+    color: #4CAF50;
+}
+
+a:hover {
+    color: #388E3C;
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancelar Reserva</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos para el contenedor de cancelación */
+        #cancelationContainer {
+            background-color: white;
+            border: 1px solid #000;
+            padding: 20px;
+            max-width: 300px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #cancelationContainer h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        #cancelationCode {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-green {
+            background-color: green;
+            color: white;
+        }
+
+        #cancelationMessage {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: green;
+            display: none;
+        }
+
+        #errorMessage {
+            margin-top: 10px;
+            font-size: 14px;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Cancelar Reserva</h2>
+    <div id="cancelationContainer">
+        <h2>Cancelar Reserva</h2>
+        <input type="text" id="cancelationCode" placeholder="Ingresa código de cancelación" />
+        <button class="btn btn-green" onclick="validarCancelacion()">Cancelar Reserva</button>
+        <div id="cancelationMessage" style="display: none;">¡Reserva cancelada!</div>
+        <div id="errorMessage" style="display: none;">Debes ingresar un código de reserva.</div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script>
+        // Función para cancelar una reserva
+        function cancelarReserva(codigoReserva) {
+            // Buscar la reserva en el registro de actividades
+            const registroDeActividades = JSON.parse(localStorage.getItem('registroDeActividades')) || [];
+            const reservaIndex = registroDeActividades.findIndex(reserva => reserva.codigoDeReserva === codigoReserva);
+            if (reservaIndex !== -1) {
+                const reserva = registroDeActividades[reservaIndex];
+
+                // Marcar el espacio como disponible
+                const espacios = JSON.parse(localStorage.getItem('espacios')) || Array.from({ length: 25 }, (_, i) => ({ id: i + 1, estado: "disponible" }));
+                const espacioIndex = espacios.findIndex(espacio => espacio.id === reserva.espacio);
+                espacios[espacioIndex].estado = "disponible";
+                localStorage.setItem('espacios', JSON.stringify(espacios));
+
+                // Eliminar la reserva del registro de actividades
+                registroDeActividades.splice(reservaIndex, 1);
+                localStorage.setItem('registroDeActividades', JSON.stringify(registroDeActividades));
+
+                // Actualizar la visualización del registro de actividades
+                actualizarPanelAdmin();
+                actualizarDisponibilidad();
+
+                // Mostrar mensaje de cancelación
+                document.getElementById('cancelationMessage').style.display = 'block';
+            } else {
+                alert("La reserva ha sido cancelada.");
+            }
+        }
+
+        // Función para validar y cancelar una reserva
+        function validarCancelacion() {
+            var cancelationCode = document.getElementById('cancelationCode').value;
+            if (cancelationCode.trim() === '') {
+                document.getElementById('errorMessage').style.display = 'block';
+            } else {
+                // Lógica de validación y cancelación de reserva
+                cancelarReserva(cancelationCode);
+            }
+        }
+    </script>
+</body>
+</html>

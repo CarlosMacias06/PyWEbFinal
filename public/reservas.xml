@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parqueadero>
+    <espacios>
+        <espacio id="1" estado="disponible"/>
+        <espacio id="2" estado="ocupado"/>
+        <espacio id="3" estado="disponible"/>
+        <!-- Añadir más espacios según sea necesario -->
+    </espacios>
+    <reservas>
+        <reserva>
+            <fecha>2024-11-12</fecha>
+            <hora>08:00</hora>
+            <espacio>1</espacio>
+            <usuario>
+                <nombre>Juan Perez</nombre>
+                <correo>juan.perez@example.com</correo>
+                <telefono>123456789</telefono>
+            </usuario>
+        </reserva>
+        <!-- Añadir más reservas -->
+    </reservas>
+</parqueadero>

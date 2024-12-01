@@ -1,0 +1,23 @@
+{
+    "parqueadero": {
+        "espacios": [
+            { "id": 1, "estado": "disponible" },
+            { "id": 2, "estado": "ocupado" },
+            { "id": 3, "estado": "disponible" }
+            
+        ],
+        "reservas": [
+            {
+                "fecha": "2024-11-12",
+                "hora": "08:00",
+                "espacio": 1,
+                "usuario": {
+                    "nombre": "Juan Perez",
+                    "correo": "juan.perez@example.com",
+                    "telefono": "123456789"
+                }
+            }
+            
+        ]
+    }
+}

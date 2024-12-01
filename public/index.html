@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Función para crear el usuario administrador
+        function crearUsuarioAdmin() {
+            const usuariosRegistrados = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+            // Verificar si el usuario administrador ya existe
+            const adminUser = usuariosRegistrados.find(usuario => usuario.correo === 'admin@gmail.com' && usuario.contrasena === 'admin');
+        if (!adminUser) {
+            // Crear el usuario administrador
+            const nuevoUsuario = {
+                correo: 'admin@gmail.com',
+                contrasena: 'admin',
+                esAdmin: true
+            };
+            usuariosRegistrados.push(nuevoUsuario);
+            localStorage.setItem('usuarios', JSON.stringify(usuariosRegistrados));
+        }
+    }
+
+    function validarInicioSesion(event) {
+        event.preventDefault(); // Prevenir el envío real del formulario
+
+        const correoInicio = document.getElementById('correoInicio').value;
+        const contrasenaInicio = document.getElementById('contrasenaInicio').value;
+
+        // Obtener usuarios registrados desde localStorage
+        const usuariosRegistrados = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+        // Verificar si el usuario es el administrador
+        if (correoInicio === 'admin@gmail.com' && contrasenaInicio === 'admin') {
+            alert("Inicio de sesión exitoso. Redirigiendo al panel de administración...");
+            window.location.replace("admin.html"); // Redirigir al panel de administración (admin.html)
+            return;
+        }
+
+        // Verificar las credenciales de los demás usuarios
+        const usuarioValido = usuariosRegistrados.find(
+            (usuario) => usuario.correo === correoInicio && usuario.contrasena === contrasenaInicio
+        );
+
+        if (usuarioValido) {
+            // Verificar si el usuario es administrador
+            if (usuarioValido.esAdmin) {
+                alert("Inicio de sesión exitoso. Redirigiendo al panel de administración...");
+                window.location.replace("admin.html"); // Redirigir al panel de administración (admin.html)
+            } else {
+                alert("Inicio de sesión exitoso. Redirigiendo al panel principal...");
+                window.location.replace("index.html"); // Redirigir al panel principal (index.html)
+            }
+        } else {
+            alert("Credenciales incorrectas. Inténtalo de nuevo.");
+        }
+    }
+
+    // Crear el usuario administrador al cargar la página
+    window.onload = function() {
+        crearUsuarioAdmin();
+    };
+</script>
+
+</head>
+<body>
+    <div class="header">
+        <h1 style="background-color: #4CAF50; padding: 10px; border-radius: 2px;">Iniciar Sesión</h1>
+    </div>
+
+    <div class="form-container">
+        <form id="inicioForm" onsubmit="validarInicioSesion(event);">
+            <input type="email" id="correoInicio" placeholder="Correo Electrónico" required>
+            <input type="password" id="contrasenaInicio" placeholder="Contraseña" required>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+
+        <p style="background-color: rgb(232, 232, 232); padding: 10px; border-radius: 5px;">¿No tienes una cuenta? <a href="registro.html">Regístrate aquí</a>.</p>
+    </div>
+    <div id="root"></div>
+</body>
+</html>

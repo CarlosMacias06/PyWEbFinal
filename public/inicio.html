@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Principal</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: rgb(41, 156, 9);
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            color: black; /* Color del texto */
+            font-size: 1.5em; /* Tamaño de fuente */
+            margin: 0; /* Eliminar margen */
+        }
+        .cerrar-sesion {
+            background-color: white;
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 5px 8px; /* Botón más pequeño */
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute; /* Para posicionarlo en la parte superior derecha */
+            top: 10px; /* Ajusta según necesites */
+            right: 30px; /* Ajustado a 30px para moverlo más a la izquierda */
+            font-size: 12px; /* Tamaño de fuente más pequeño */
+            width: auto; /* Ancho automático */
+            height: auto; /* Alto automático */
+        }
+        .cerrar-sesion:hover {
+            background-color: darkred; /* Color al pasar el mouse */
+            color: white;
+        }
+        .menu-botones {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .menu-botones button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 200px; /* Ancho fijo para los botones */
+        }
+        .menu-botones button:hover {
+            background-color: darkgreen; /* Color al pasar el mouse */
+        }
+        body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: url('aa.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Establece la altura del cuerpo al 100% de la altura de la ventana */
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent; /* Establece el fondo como transparente */
+}
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Panel Principal</h1>
+        <button class="cerrar-sesion" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </header>
+
+    <div class="menu-botones">
+        <button onclick="window.location.href='reservas.html'">Reservar espacio</button>
+        <button onclick="window.location.href='disponibilidad.html'">Disponibilidad</button>
+        <button onclick="window.location.href='cancelacion.html'">Cancelación de Reservas</button>
+    </div>
+
+    <!-- Elemento para React -->
+    <div id="root"></div> <!-- Aquí es donde React montará la aplicación -->
+
+   
+    
+
+    <script>
+        function cerrarSesion() {
+    // Redirigir al usuario a la página index.html
+    window.location.href = 'index.html';
+}
+</script>

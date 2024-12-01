@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control del Administrador</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <p id="resultado"></p> <!-- Etiqueta para mostrar el resultado -->
+
+    <style>
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: url('aa.jpg');
+    background-size: 200% 300%; /* Estira la imagen para cubrir toda la pantalla */
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Establece la altura del cuerpo al 100% de la altura de la ventana */
+}
+
+        /* Estilos para el cuadro de disponibilidad */
+        .tabla {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 columnas */
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .cuadro {
+            width: 50px; /* Ajustado para un tamaño más pequeño */
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px; /* Tamaño de fuente más pequeño */
+            color: rgb(255, 255, 255);
+            border: 1px solid #000000;
+        }
+        .disponible {
+            background-color: green; /* Espacio disponible */
+        }
+        .ocupado {
+            background-color: red; /* Espacio ocupado */
+        }
+        #disponibilidadContainer {
+            background-color: rgba(255, 255, 255, 0.864); /* Fondo blanco traslúcido */
+            border: 1px solid #000000; /* Borde negro */
+            padding: 10px;
+            max-width: 300px; /* Ancho máximo del cuadro */
+            margin: 20px auto; /* Centrar el cuadro */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #reporteContainer {
+            background-color: rgba(255, 255, 255, 0.864);
+            border: 1px solid #000000;
+            padding: 20px; /* Aumentar el padding */
+            max-width: 400px; /* Aumentar el ancho */
+            margin-left: 40px; /* Aumentar el margen izquierdo */
+        }
+        #cancelationContainer {
+    background-color: rgba(255, 255, 255, 0.864);
+    border: 1px solid #000;
+    padding: 20px; /* Aumentar el padding */
+    max-width: 400px; /* Aumentar el ancho */
+    margin-left: 40px; /* Aumentar el margen izquierdo */
+    bottom: 276.8px; /* Ajustar este valor para mover el cuadro otros 3 cm hacia arriba (173.4px - 113.4px) */
+    left: 50px;
+    position: relative; /* Asegúrate de que la posición sea relativa para que bottom funcione */
+}
+
+
+
+        #cancelationContainer h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        #cancelationCode {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-green {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Panel de Control del Administrador</h1>
+    <section id="log-seccion">
+        <h2>Registro de Acciones</h2>
+        <div id="movimientos-recientes">
+            <!-- Aquí se mostrarán los registros de todas las acciones realizadas en las interfaces -->
+        </div>
+    </section>
+
+    <section id="disponibilidadContainer">
+        <div>
+            <h2>Disponibilidad de Espacios</h2>
+            <div id="disponibilidad">Espacios disponibles: 0 de 25</div>
+            <div class="tabla" id="tablaDisponibilidad">
+                <!-- Los cuadros se generarán aquí con JavaScript -->
+            </div>
+        </div>
+        <div id="reporteContainer">
+            <h2>Generar Reporte Del dia</h2>
+            <form id="form-reporte" onsubmit="return generarReporte()">
+                <label for="fecha-reporte">Seleccionar Fecha:</label>
+                <input type="date" id="fecha-reporte" name="fecha-reporte" required><br><br>
+                <button type="submit">Generar Reporte</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Cuadro de cancelación de reserva -->
+    <div id="cancelationContainer">
+        <h2>Cancelar Reserva</h2>
+        <input type="text" id="cancelationCode" placeholder="Ingresa código de cancelación" />
+        <button class="btn btn-green" onclick="validarCancelacion()">Cancelar Reserva</button>
+        <div id="cancelationMessage" style="display: none;">¡Reserva cancelada!</div>
+        <div id="errorMessage" style="display: none;">Debes ingresar un código de reserva.</div>
+    </div>
+
+    <script>
+        // Array para simular el registro de actividades (se cargan desde localStorage o se inicializan vacíos)
+        let registroDeActividades = JSON.parse(localStorage.getItem('registroDeActividades')) || [];
+
+        // Función para actualizar el panel del administrador con los movimientos
+        function actualizarPanelAdmin() {
+            const movimientosDiv = document.getElementById('movimientos-recientes');
+            if (!movimientosDiv) return; // Si no se encuentra el elemento, no hacer nada
+
+            movimientosDiv.innerHTML = ""; // Limpiar antes de actualizar
+
+            if (registroDeActividades.length === 0) {
+                movimientosDiv.innerHTML = "<p>No hay movimientos registrados.</p>";
+                return;
+            }
+
+            // Mostrar cada actividad registrada
+            registroDeActividades.forEach((actividad) => {
+                const actividadElem = document.createElement('p');
+                actividadElem.textContent = `${actividad.fecha} - [${actividad.seccion}] - ${actividad.accion}, código de usuario: ${actividad.codigoDeReserva}`;
+                movimientosDiv.appendChild(actividadElem);
+            });
+        }
+
+        // Inicializar el panel la primera vez (se ejecuta cuando se carga la página del panel)
+        window.onload = function() {
+            actualizarPanelAdmin(); // Actualizar panel de admin
+            actualizarDisponibilidad(); // Mostrar disponibilidad de espacios
+        };
+
+        // Datos de los espacios desde localStorage
+        let espacios = JSON.parse(localStorage.getItem('espacios')) || Array.from({ length: 25 }, (_, i) => ({ id: i + 1, estado: "disponible" }));
+
+        function actualizarDisponibilidad() {
+            const tabla = document.getElementById('tablaDisponibilidad');
+            tabla.innerHTML = ''; // Limpiar la tabla
+
+            // Generar la tabla de disponibilidad
+            espacios.forEach(espacio => {
+                const cuadro = document.createElement('div');
+                cuadro.className = espacio.estado === "disponible" ? 'cuadro disponible' : 'cuadro ocupado'; // Clase según disponibilidad
+                cuadro.textContent = espacio.id; // Mostrar número del espacio
+                tabla.appendChild(cuadro);
+            });
+
+            // Actualizar el texto de disponibilidad
+            const espaciosDisponibles = espacios.filter(espacio => espacio.estado === "disponible").length;
+            document.getElementById('disponibilidad').textContent = `Espacios disponibles: ${espaciosDisponibles} de ${espacios.length}`;
+        }
+
+        // Función para generar el reporte del uso diario
+// Función para generar el reporte del uso diario
+function generarReporte() {
+    const fechaReporte = document.getElementById('fecha-reporte').value;
+    
+    // Obtener el registro de actividades desde localStorage
+    const registroDeActividades = JSON.parse(localStorage.getItem('registroDeActividades')) || [];
+    
+    // Filtrar las reservas por la fecha seleccionada
+    const reservasDelDia = registroDeActividades.filter(actividad => actividad.fecha === fechaReporte);
+    
+    // Contar las reservas
+    const espaciosReservados = reservasDelDia.length;
+    const espaciosDisponibles = 25 - espaciosReservados; // Suponiendo que hay 25 espacios en total
+
+    // Mostrar la disponibilidad en la etiqueta <p>
+    const resultado = document.getElementById('resultado');
+    resultado.innerHTML = `Espacios disponibles: ${espaciosDisponibles}, Reservados: ${espaciosReservados}`;
+
+    // Mostrar alerta con la información
+    alert(`Generando reporte del ${fechaReporte}\nEspacios ocupados: ${espaciosReservados}\nEspacios disponibles: ${espaciosDisponibles}`);
+
+    return false; // Evitar el envío del formulario
+}
+
+
+
+
+
+        // Función para recibir la información de la reserva desde la página de reservas
+        function recibirReserva(fecha, hora, espacioReservado, codigoDeReserva) {
+            // Registrar la reserva en el panel de administración
+            registroDeActividades.push({
+                fecha: fecha,
+                hora: hora,
+                espacio: espacioReservado,
+                codigoDeReserva: codigoDeReserva,
+                seccion: "Reservas",
+                accion: "Nueva reserva"
+            });
+            localStorage.setItem('registroDeActividades', JSON.stringify(registroDeActividades));
+
+            // Actualizar la disponibilidad de espacios en tiempo real
+            actualizarDisponibilidadEnTiempoReal(espacioReservado);
+        }
+
+        function actualizarDisponibilidadEnTiempoReal(espacioReservado) {
+            // Buscar el espacio reservado en el array de espacios
+            const index = espacios.findIndex(espacio => espacio.id === espacioReservado);
+            if (index !== -1) {
+                // Marcar el espacio como ocupado
+                espacios[index].estado = "ocupado";
+                localStorage.setItem('espacios', JSON.stringify(espacios));
+                actualizarDisponibilidad();
+            }
+        }
+
+        // Función para cancelar una reserva
+        function cancelarReserva(codigoReserva) {
+            // Buscar la reserva en el registro de actividades
+            const reservaIndex = registroDeActividades.findIndex(reserva => reserva.codigoDeReserva === codigoReserva);
+            if (reservaIndex !== -1) {
+                const reserva = registroDeActividades[reservaIndex];
+
+                // Marcar el espacio como disponible
+                const espacioIndex = espacios.findIndex(espacio => espacio.id === reserva.espacio);
+                espacios[espacioIndex].estado = "disponible";
+                localStorage.setItem('espacios', JSON.stringify(espacios));
+
+                // Eliminar la reserva del registro de actividades
+                registroDeActividades.splice(reservaIndex, 1);
+                localStorage.setItem('registroDeActividades', JSON.stringify(registroDeActividades));
+
+                // Actualizar la visualización del registro de actividades
+                actualizarPanelAdmin();
+                actualizarDisponibilidad();
+            } else {
+                alert("No se encontró ninguna reserva con el código proporcionado.");
+            }
+        }
+
+        // Función para validar y cancelar una reserva
+        function validarCancelacion() {
+            var cancelationCode = document.getElementById('cancelationCode').value;
+            if (cancelationCode.trim() === '') {
+                document.getElementById('errorMessage').style.display = 'block';
+            } else {
+                // Lógica de validación y cancelación de reserva
+                cancelarReserva(cancelationCode);
+                document.getElementById('cancelationMessage').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+            }
+            // Función para recibir y registrar un código de cancelación
+function registrarCodigoCancelacion(codigoDeCancelacion, fecha, hora) {
+    // Agregar el evento de cancelación al registro de actividades
+    registroDeActividades.push({
+        fecha: fecha,
+        hora: hora,
+        codigoDeReserva: codigoDeCancelacion,
+        seccion: "Cancelación",
+        accion: "Reserva cancelada"
+    });
+
+    // Guardar los cambios en localStorage
+    localStorage.setItem('registroDeActividades', JSON.stringify(registroDeActividades));
+
+    // Actualizar el panel de administrador
+    actualizarPanelAdmin();
+}
+
+// Escuchar cambios en el localStorage para sincronizar datos entre páginas
+window.addEventListener('storage', (event) => {
+    if (event.key === 'codigoDeCancelacion') {
+        const cancelacion = JSON.parse(event.newValue);
+
+        if (cancelacion) {
+            // Registrar la cancelación en el panel
+            registrarCodigoCancelacion(cancelacion.codigo, cancelacion.fecha, cancelacion.hora);
+        }
+    }
+});
+
+        }
+    </script>
+</body>
+</html>
